@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyNDER | Stress Relief</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #5E60CE;
+            --secondary: #64DFDF;
+            --glass: rgba(255, 255, 255, 0.25);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --text-color: #2D3748;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: linear-gradient(180deg, #A9C9FF 0%, #FFBBEC 100%);
+            color: var(--text-color);
+        }
+
+        /* --- Clouds Background --- */
+        .cloud-layer {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            background: url('https://raw.githubusercontent.com/redferndev/resources/master/clouds-transparent.png') repeat-x;
+            background-size: 200% auto;
+            opacity: 0.6;
+            animation: drift 120s linear infinite;
+        }
+        .cloud-layer-2 {
+            background-size: 150% auto;
+            top: 20%;
+            opacity: 0.4;
+            animation: drift 180s linear infinite reverse;
+        }
+
+        @keyframes drift { from { background-position: 0 0; } to { background-position: 1000% 0; } }
+
+        /* --- Header --- */
+        header {
+            margin-top: 2rem;
+            text-align: center;
+            z-index: 10;
+        }
+
+        h1 {
+            font-size: 4.5rem; /* Large and Bold */
+            font-weight: 800;
+            margin: 0;
+            color: white;
+            text-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            letter-spacing: -2px;
+            line-height: 1;
+        }
+
+        p.subtitle {
+            font-size: 1.2rem;
+            color: rgba(255,255,255,0.95);
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+
+        /* --- Galaxy Container --- */
+        .universe {
+            flex: 1;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            perspective: 1000px;
+        }
+
+        .cluster {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            width: 90%;
+            max-width: 1100px;
+            transition: opacity 0.3s ease;
+        }
+
+        /* --- Bubbles --- */
+        .bubble {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            background: radial-gradient(120% 120% at 30% 30%, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.1) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 
+                inset -5px -5px 15px rgba(255,255,255,0.1),
+                0 10px 25px rgba(0,0,0,0.1);
+            backdrop-filter: blur(4px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #4a5568;
+            padding: 10px;
+            position: relative;
+            user-select: none;
+            animation: float 5s ease-in-out infinite;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* Bubble Hover & Active States */
+        .bubble:hover {
+            transform: scale(1.15);
+            background: white;
+            z-index: 10;
+            box-shadow: 0 15px 35px rgba(94, 96, 206, 0.2);
+            color: var(--primary);
+        }
+
+        /* Shine Effect */
+        .bubble::after {
+            content: '';
+            position: absolute;
+            top: 15%; left: 20%;
+            width: 25%; height: 15%;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.8);
+            transform: rotate(-45deg);
+        }
+
+        /* Specific styles for Task Nodes */
+        .bubble.task-node {
+            width: 110px;
+            height: 110px;
+            font-size: 0.75rem;
+            background: radial-gradient(120% 120% at 30% 30%, #e0c3fc 0%, rgba(255, 255, 255, 0.2) 100%);
+        }
+
+        /* Animation Classes */
+        .bubble.popped {
+            animation: popOut 0.4s forwards;
+            pointer-events: none;
+        }
+
+        @keyframes popOut {
+            0% { transform: scale(1); }
+            40% { transform: scale(0.85); }
+            100% { transform: scale(1.8); opacity: 0; }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        /* --- Live List Dashboard (Bottom) --- */
+        .dashboard {
+            width: 90%;
+            max-width: 900px;
+            background: var(--glass);
+            border-top: 1px solid var(--glass-border);
+            border-radius: 20px 20px 0 0;
+            backdrop-filter: blur(15px);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.05);
+            z-index: 20;
+            transition: all 0.3s ease;
+        }
+
+        .dash-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .counter {
+            font-weight: 800;
+            color: white;
+            font-size: 1.2rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .pill-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            min-height: 50px;
+            align-items: center;
+        }
+
+        .task-pill {
+            background: white;
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--primary);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            animation: slideIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .task-pill span {
+            margin-left: 8px;
+            cursor: pointer;
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+
+        .action-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 50px;
+            font-weight: 700;
+            cursor: pointer;
+            opacity: 0.5;
+            pointer-events: none;
+            transition: 0.3s;
+        }
+        .action-btn.active { opacity: 1; pointer-events: all; box-shadow: 0 5px 15px rgba(94, 96, 206, 0.4); }
+
+        @keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        /* --- Overlay --- */
+        .overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.95);
+            z-index: 100;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .overlay.show { display: flex; animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            h1 { font-size: 3rem; }
+            .bubble { width: 100px; height: 100px; font-size: 0.7rem; }
+            .dashboard { width: 100%; border-radius: 0; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="cloud-layer"></div>
+    <div class="cloud-layer-2"></div>
+
+    <header>
+        <h1>MyNDER</h1>
+        <p class="subtitle">Pop bubbles to build your relief plan</p>
+    </header>
+
+    <div class="universe">
+        <div class="cluster" id="cluster">
+            </div>
+    </div>
+
+    <div class="dashboard">
+        <div class="dash-header">
+            <div class="counter" id="counter">0 / 5 Collected</div>
+            <button class="action-btn" id="finishBtn" onclick="showFinal()">Finish Plan</button>
+        </div>
+        <div class="pill-container" id="pillContainer">
+            <div style="color: rgba(255,255,255,0.7); font-size: 0.9rem; font-style: italic;" id="emptyMsg">
+                Your tasks will appear here...
+            </div>
+        </div>
+    </div>
+
+    <div class="overlay" id="finalOverlay">
+        <h1 style="color:var(--primary); font-size: 3rem;">Your Week</h1>
+        <p style="font-size:1.2rem; color:#666;">You've committed to these actions:</p>
+        
+        <div id="finalList" style="background:#f4f7fa; padding:2rem; border-radius:20px; width:80%; max-width:500px; margin:20px 0; text-align:left;"></div>
+        
+        <div style="display:flex; gap:10px;">
+            <button class="action-btn active" onclick="sendEmail()">✉️ Email Plan</button>
+            <button class="action-btn active" style="background:#cbd5e0;" onclick="location.reload()">Start Over</button>
+        </div>
+    </div>
+
+    <script>
+        // --- EXPANDED DATA STRUCTURE ---
+        const database = {
+            "Somatic (Body)": {
+                "Quick Reset": ["Physiological Sigh", "Ice Water Splash", "Shake Hands Out", "Voo Sound", "Cold Spoon on Face", "Tap Your Chest"],
+                "Deep Relax": ["Legs Up Wall", "Progressive Muscle", "Self-Massage", "Ear Pulling", "Jaw Release", "Palming Eyes"],
+                "Movement": ["Neck Stretch", "Barefoot Walk", "Dance to 1 Song", "Yoga Nidra", "Hip Circles", "Forward Fold"]
+            },
+            "Mindset (Head)": {
+                "Perspective": ["10-10-10 Rule", "Reframe 'Get to'", "Zoom Out View", "Good Enough (80%)", "Opposite Action", "Silver Lining"],
+                "Calming": ["5-4-3-2-1 Sense", "Brain Dump", "Worry Time", "Hand on Heart", "Count 100 by 7s", "Name the Color"],
+                "Focus": ["Mantra Repetition", "Visualize Beach", "Gratitude Blitz", "Watch Candle", "Listen to Brown Noise", "One Thing at a Time"]
+            },
+            "Nature (Earth)": {
+                "Indoors": ["Buy a Plant", "Open Window", "Soft Lighting", "Aromatherapy", "Listen to Rain", "Touch a Stone"],
+                "Outdoors": ["Forest Bathing", "Morning Sun", "Watch Clouds", "Touch a Tree", "Stargazing", "Find a Bird"]
+            },
+            "Creativity (Play)": {
+                "Artistic": ["Adult Coloring", "Doodle Shapes", "Paint Cloud", "Write Haiku", "Collage Making", "Clay Modeling"],
+                "Fun": ["Sing Loudly", "Pet a Dog", "Do Puzzle", "Magic Trick", "Build Lego", "Read Comic"],
+                "Vent": ["Scream in Pillow", "Nostalgic Music", "Rip Paper", "Cook Meal", "Punch Dough", "Write & Burn"]
+            },
+            "Social (People)": {
+                "Connect": ["Vent to Friend", "20s Hug", "Thank You Text", "Smile at Stranger", "Call Mom", "Share a Meme"],
+                "Boundaries": ["Say 'No'", "Leave Room", "Cancel Plans", "Mute Group Chat", "Ask for Help", "Do Not Disturb"]
+            },
+            "Sensory (Feel)": {
+                "Touch": ["Weighted Blanket", "Pet Texture", "Warm Bath", "Cool Sheet", "Rub Velvet", "Hold Warm Mug"],
+                "Smell/Taste": ["Peppermint Tea", "Dark Chocolate", "Smell Lemon", "Chew Gum", "Eat an Orange", "Smell Coffee"]
+            },
+            "Digital (Tech)": {
+                "Detox": ["Phone-Free Bed", "Gray Scale Mode", "Delete 1 App", "Unfollow Toxic", "Airplane Mode", "Clean Desktop"],
+                "Habits": ["No News Today", "Turn Off Notifs", "Unsubscribe Junk", "Hide Likes", "Limit Screen Time", "Audio Only"]
+            },
+            "Work (Focus)": {
+                "Tactics": ["Eat the Frog", "Pomodoro Timer", "2-Minute Rule", "Block Lunch", "Clean Desk", "List 3 Priorities"],
+                "End of Day": ["Shutdown Ritual", "Close Tabs", "Tomorrow's List", "Celebrate Win", "Tidy Cables", "Log Off Early"]
+            }
+        };
+
+        // --- STATE ---
+        let selectedTasks = [];
+        const MAX_TASKS = 5;
+        const cluster = document.getElementById('cluster');
+        const pillContainer = document.getElementById('pillContainer');
+        const emptyMsg = document.getElementById('emptyMsg');
+        const counter = document.getElementById('counter');
+        const finishBtn = document.getElementById('finishBtn');
+
+        // --- INITIALIZATION ---
+        renderMainCategories();
+
+        // --- RENDER FUNCTIONS ---
+
+        function renderMainCategories() {
+            transitionCluster(() => {
+                Object.keys(database).forEach(category => {
+                    createBubble(category, 'main', () => {
+                        renderSubCategories(category);
+                    });
+                });
+            });
+        }
+
+        function renderSubCategories(mainCategory) {
+            transitionCluster(() => {
+                const subCats = database[mainCategory];
+                Object.keys(subCats).forEach(subCat => {
+                    createBubble(subCat, 'sub', () => {
+                        renderTasks(mainCategory, subCat);
+                    });
+                });
+            });
+        }
+
+        function renderTasks(mainCategory, subCat) {
+            transitionCluster(() => {
+                const tasks = database[mainCategory][subCat];
+                tasks.forEach(task => {
+                    createBubble(task, 'task', (el) => {
+                        handleTaskSelection(task, el);
+                    });
+                });
+            });
+        }
+
+        // --- BUBBLE LOGIC ---
+
+        function createBubble(text, type, onClick) {
+            const b = document.createElement('div');
+            b.className = `bubble ${type === 'task' ? 'task-node' : ''}`;
+            b.innerText = text;
+
+            // Randomize size slightly for organic galaxy look
+            const baseSize = type === 'task' ? 100 : 130;
+            const variance = Math.floor(Math.random() * 30);
+            b.style.width = `${baseSize + variance}px`;
+            b.style.height = `${baseSize + variance}px`;
+            
+            // Random animation delay
+            b.style.animationDelay = `${Math.random() * 2}s`;
+
+            b.onclick = (e) => {
+                // "Pop" animation
+                b.classList.add('popped');
+                
+                // Execute logic after small delay for animation
+                setTimeout(() => {
+                    onClick(b);
+                }, 300);
+            };
+
+            cluster.appendChild(b);
+        }
+
+        function transitionCluster(renderNextContent) {
+            // 1. Fade out current content
+            cluster.style.opacity = '0';
+            
+            setTimeout(() => {
+                // 2. Clear HTML
+                cluster.innerHTML = '';
+                // 3. Render new bubbles (which are invisible initially or via CSS)
+                renderNextContent();
+                // 4. Fade in
+                cluster.style.opacity = '1';
+            }, 300);
+        }
+
+        // --- SELECTION LOGIC ---
+
+        function handleTaskSelection(task, bubbleElement) {
+            // Check duplicates
+            if (selectedTasks.includes(task)) {
+                alert("You already have this!");
+                renderMainCategories(); // Reset to home even if duplicate
+                return;
+            }
+
+            // Check max
+            if (selectedTasks.length >= MAX_TASKS) {
+                alert("You have reached 5 tasks. Remove one to add more.");
+                return;
+            }
+
+            // Add task
+            addTask(task);
+
+            // AUTO RESET: Go back to Main Categories immediately
+            renderMainCategories();
+        }
+
+        function addTask(task) {
+            selectedTasks.push(task);
+            updateDashboard();
+        }
+
+        function removeTask(task) {
+            selectedTasks = selectedTasks.filter(t => t !== task);
+            updateDashboard();
+        }
+
+        function updateDashboard() {
+            // Update Counter
+            counter.innerText = `${selectedTasks.length} / ${MAX_TASKS} Collected`;
+            
+            // Toggle Empty Message
+            if (selectedTasks.length > 0) {
+                emptyMsg.style.display = 'none';
+            } else {
+                emptyMsg.style.display = 'block';
+            }
+
+            // Render Pills
+            pillContainer.innerHTML = '';
+            selectedTasks.forEach(task => {
+                const pill = document.createElement('div');
+                pill.className = 'task-pill';
+                pill.innerHTML = `${task} <span onclick="removeTask('${task}')">&times;</span>`;
+                pillContainer.appendChild(pill);
+            });
+
+            // Activate Finish Button
+            if (selectedTasks.length === MAX_TASKS) {
+                finishBtn.classList.add('active');
+            } else {
+                finishBtn.classList.remove('active');
+            }
+        }
+
+        // --- FINAL STEPS ---
+
+        function showFinal() {
+            const listDiv = document.getElementById('finalList');
+            listDiv.innerHTML = '';
+            selectedTasks.forEach((t, i) => {
+                listDiv.innerHTML += `<div style="padding:10px; border-bottom:1px solid #ccc; font-size:1.1rem;"><strong>${i+1}.</strong> ${t}</div>`;
+            });
+            document.getElementById('finalOverlay').classList.add('show');
+        }
+
+        function sendEmail() {
+            const subject = "MyNDER Stress Relief Plan";
+            const body = "Here are the 5 tasks I chose to relieve stress this week:\n\n" + selectedTasks.join('\n');
+            window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        }
+
+    </script>
+</body>
+</html>
